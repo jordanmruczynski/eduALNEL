@@ -3,7 +3,7 @@ from openai_utils import get_quiz_data
 from quiz_utils import string_to_list, get_randomized_options
 from youtube_utils import extract_video_id_from_url, get_transcript_text
 
-OPENAI_API_KEY = "REDACTED"
+OPENAI_API_KEY = st.secrets["openai_api_key"]
 
 st.set_page_config(
     page_title="eduALNEL",
