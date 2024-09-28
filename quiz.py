@@ -34,6 +34,9 @@ if submitted or ('quiz_data_list' in st.session_state):
 
     with st.spinner("Trwa tworzenie quizu..."):
         if submitted:
+            st.session_state.correct_answers = []
+            st.session_state.randomized_options = []
+
             video_id = extract_video_id_from_url(YOUTUBE_URL)
             video_transcription = get_transcript_text(video_id)
             quiz_data_str = get_quiz_data(video_transcription, OPENAI_API_KEY)
