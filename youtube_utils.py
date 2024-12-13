@@ -28,7 +28,7 @@ def extract_video_id_from_url(url):
 
 def get_transcript_text(video_id):
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id)
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['pl', 'en'])
         return " ".join([item["text"] for item in transcript])
     except (YouTubeRequestFailed, VideoUnavailable, InvalidVideoId, TooManyRequests, NoTranscriptAvailable, NotTranslatable,
             TranslationLanguageNotAvailable, CookiePathInvalid, CookiesInvalid, FailedToCreateConsentCookie):
