@@ -6,9 +6,6 @@ class Footer:
     """
     @staticmethod
     def render():
-        """
-        Metoda renderująca stopkę z dowolną treścią.
-        """
         st.markdown(
             """
             ---

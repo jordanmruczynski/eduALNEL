@@ -1,7 +1,4 @@
-# youtube_utils.py
 import streamlit as st
-import http.client
-import json
 from youtube_transcript_api import (
     YouTubeTranscriptApi, YouTubeRequestFailed, VideoUnavailable, InvalidVideoId, TooManyRequests,
     TranscriptsDisabled, NoTranscriptAvailable, NotTranslatable, TranslationLanguageNotAvailable,
@@ -9,9 +6,8 @@ from youtube_transcript_api import (
 )
 
 proxies = {
-    "http": "REDACTED"  # Zamień na swoje hasło i wybrany host
+    "http": st.secrets["openai_api_key"]
 }
-
 
 def extract_video_id_from_url(url):
     """Extracts video ID from YouTube URL."""

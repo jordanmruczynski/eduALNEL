@@ -1,5 +1,4 @@
 import streamlit as st
-
 from footer import Footer
 from openai_utils import get_quiz_data
 from openai_utils import string_to_list, get_randomized_options
@@ -9,7 +8,7 @@ from pptx import Presentation
 import time
 
 # API Key
-OPENAI_API_KEY = "REDACTED"
+OPENAI_API_KEY = st.secrets["openai_api_key"]
 
 # Page configuration
 st.set_page_config(
@@ -92,9 +91,6 @@ elif source_option == "Własny pomysł":
     input_text = st.text_area("Wpisz pomysł:", value="np. z książki \"Zemsta\" Aleksandra Fredry..")
 
 # Difficulty and language selection
-# difficulty = st.selectbox("Wybierz poziom trudności:", ["Easy", "Medium", "Hard", "Expert"])
-# num_questions = st.slider("Liczba pytań:", min_value=1, max_value=20, value=5)
-# language = st.selectbox("Wybierz język pytań:", ["Polish", "English", "German", "French", "Spanish"])
 difficulty_levels = {
     "Medium": "🏋️ Medium",
     "Easy": "💃 Easy",
