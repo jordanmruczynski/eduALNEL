@@ -6,7 +6,7 @@ from youtube_transcript_api import (
 )
 
 proxies = {
-    "http": st.secrets["openai_api_key"]
+    "http": st.secrets["proxies_key"]
 }
 
 def extract_video_id_from_url(url):
