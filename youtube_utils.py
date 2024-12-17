@@ -1,19 +1,25 @@
+# youtube_utils.py
 import streamlit as st
+import http.client
+import json
 from youtube_transcript_api import (
     YouTubeTranscriptApi, YouTubeRequestFailed, VideoUnavailable, InvalidVideoId, TooManyRequests,
     TranscriptsDisabled, NoTranscriptAvailable, NotTranslatable, TranslationLanguageNotAvailable,
     CookiePathInvalid, CookiesInvalid, FailedToCreateConsentCookie, NoTranscriptFound
 )
 
-from pytube import extract
-
+proxies = {
+    "http": "REDACTED"  # Zamień na swoje hasło i wybrany host
+}
 
 
 def extract_video_id_from_url(url):
+    """Extracts video ID from YouTube URL."""
+    from pytube import extract
     try:
         return extract.video_id(url)
     except Exception:
-        st.error("Please provide a valid YouTube URL.")
+        st.error("Proszę podać prawidłowy format linku url YouTube.")
         example_urls = [
             'http://youtu.be/SA2iWivDJiE',
             'http://www.youtube.com/watch?v=_oPAwA_Udwc&feature=feedu',
@@ -22,13 +28,12 @@ def extract_video_id_from_url(url):
             'https://www.youtube.com/watch?v=rTHlyTphWP0&index=6&list=PLjeDyYvG6-40qawYNR4juzvSOg-ezZ2a6',
             'https://www.youtube.com/watch?time_continue=9&v=n0g-Y0oo5Qs&feature=emb_logo'
         ]
-        st.info("Here are some valid formats: " + " ,".join(example_urls))
+        st.info("Przykładowe formaty: " + " ,".join(example_urls))
         st.stop()
-
 
 def get_transcript_text(video_id):
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['pl', 'en'])
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['pl', 'en', 'de'], proxies=proxies)
         return " ".join([item["text"] for item in transcript])
     except (YouTubeRequestFailed, VideoUnavailable, InvalidVideoId, TooManyRequests, NoTranscriptAvailable, NotTranslatable,
             TranslationLanguageNotAvailable, CookiePathInvalid, CookiesInvalid, FailedToCreateConsentCookie):
@@ -38,7 +43,7 @@ def get_transcript_text(video_id):
         st.error("Film ma wyłączone napisy. Wprowadź proszę inny.")
         st.stop()
     except NoTranscriptFound:
-        st.error("Film ma wyłączone angielskie napisy. Upewnij się, że film jest po angielsku, lub ma włączone angielskie napisy.")
+        st.error("Film nie posiada napisów w języku polskim, angielskim ani niemieckim :(")
         st.stop()
     except Exception as e:
         st.error(f"An unexpected error occurred: {str(e)}. Please try again.")

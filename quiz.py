@@ -1,4 +1,6 @@
 import streamlit as st
+
+from footer import Footer
 from openai_utils import get_quiz_data
 from openai_utils import string_to_list, get_randomized_options
 from youtube_utils import extract_video_id_from_url, get_transcript_text
@@ -11,20 +13,36 @@ OPENAI_API_KEY = "REDACTED"
 
 # Page configuration
 st.set_page_config(
-    page_title="eduALNEL",
-    page_icon="📝",
+    page_title="QuizCraft",
+    page_icon="🤖",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# Title and description
-st.title(":orange[eduALNEL] - Obejrzyj 💻 - Naucz się 📖 - Sprawdź się! 📝", anchor=False)
+MAX_REQUESTS = 5
+TIME_WINDOW = 600
+
+if "request_timestamps" not in st.session_state:
+    st.session_state.request_timestamps = []
+
+def is_request_allowed():
+    now = time.time()
+    st.session_state.request_timestamps = [
+        ts for ts in st.session_state.request_timestamps if now - ts < TIME_WINDOW
+    ]
+    if len(st.session_state.request_timestamps) < MAX_REQUESTS:
+        st.session_state.request_timestamps.append(now)
+        return True
+    return False
+
+st.title(":orange[QuizCraft]   1. Obejrzyj 💻 2. Naucz się 📖 3. Sprawdź się! 📝", anchor=False)
+st.subheader("Stwórz Quiz z dowolnego materiału i sprawdź swoją wiedzę!")
 st.write("""
 **Jak działamy?** 🤔
 
-👉 Wybierz źródło materiału (filmik YouTube, plik PDF, prezentacja PowerPoint lub własny pomysł), a my wygenerujemy Quiz, abyś mógł sprawdzić swoją wiedzę!
+👉 Wybierz źródło materiału (filmik YouTube, plik PDF, prezentacja PowerPoint lub własny pomysł), a my wygenerujemy Quiz, abyś mógł się sprawdzić!
 
-❗ Nasza aplikacja jest w fazie testów, więc prosimy o wyrozumiałość w przypadku błędów. Dziękujemy! 🙏
+🙏 Nasza aplikacja jest w fazie testów, prosimy o wyrozumiałość w przypadku błędów. Dziękujemy! ❤️ 
 """)
 
 # Initialize session state
@@ -50,7 +68,7 @@ source_option = st.radio("Wybierz źródło danych:", ["YouTube", "PDF", "PowerP
 input_text = ""
 
 if source_option == "YouTube":
-    youtube_url = st.text_input("Wprowadź link filmiku YouTube:", value="https://www.youtube.com/watch?v=RRubcjpTkks")
+    youtube_url = st.text_input("Wprowadź link filmiku YouTube:")
     if youtube_url:
         video_id = extract_video_id_from_url(youtube_url)
         input_text = get_transcript_text(video_id)
@@ -74,12 +92,39 @@ elif source_option == "Własny pomysł":
     input_text = st.text_area("Wpisz pomysł:", value="np. z książki \"Zemsta\" Aleksandra Fredry..")
 
 # Difficulty and language selection
-difficulty = st.selectbox("Wybierz poziom trudności:", ["Easy", "Medium", "Hard", "Expert"])
+# difficulty = st.selectbox("Wybierz poziom trudności:", ["Easy", "Medium", "Hard", "Expert"])
+# num_questions = st.slider("Liczba pytań:", min_value=1, max_value=20, value=5)
+# language = st.selectbox("Wybierz język pytań:", ["Polish", "English", "German", "French", "Spanish"])
+difficulty_levels = {
+    "Medium": "🏋️ Medium",
+    "Easy": "💃 Easy",
+    "Hard": "💨 Hard",
+    "Expert": "🌐 Expert"
+}
+difficulty = st.selectbox("Wybierz poziom trudności:", list(difficulty_levels.values()))
+
 num_questions = st.slider("Liczba pytań:", min_value=1, max_value=20, value=5)
-language = st.selectbox("Wybierz język pytań:", ["English", "Polish", "German", "French"])
+
+language_options = {
+    "Polish": "🇵🇱 Polski",
+    "English": "🇺🇸 English",
+    "German": "🇩🇪 Deutsch",
+    "French": "🇫🇷 Français",
+    "Spanish": "🇪🇸 Español",
+    "Italian": "🇮🇹 Italiano",
+    "Dutch": "🇳🇱 Nederlands",
+    "Russian": "🇷🇺 Русский",
+    "Chinese": "🇨🇳 中文",
+    "Japanese": "🇯🇵 日本語"
+}
+language = st.selectbox("Wybierz język pytań:", list(language_options.values()), index=0)
 
 # Quiz creation
 if st.button("Stwórz Quiz"):
+    if not is_request_allowed():
+        st.error(f"Osiągnąłeś limit {MAX_REQUESTS} zapytań w ciągu ostatnich 10 minut. Spróbuj ponownie później!")
+        st.stop()
+
     if not input_text.strip():
         st.warning("Podaj dane wejściowe.")
         st.stop()
@@ -99,10 +144,11 @@ if st.button("Stwórz Quiz"):
 
 # Quiz display
 if st.session_state.quiz_data_list:
-    st.subheader("Quiz: Przetestuj swoją wiedzę!")
+    st.subheader("Quiz: Przetestuj swoją wiedzę! 🧠")
     for i, q in enumerate(st.session_state.quiz_data_list):
         options = st.session_state.randomized_options[i]
-        response = st.radio(q[0], options, key=f"question_{i}")
+        question_text = f"{i + 1}: {q[0]}"
+        response = st.radio(question_text, options, key=f"question_{i}")
         st.session_state.user_answers[i] = response
 
     if st.button("Zobacz wyniki"):
@@ -120,6 +166,8 @@ if st.session_state.quiz_data_list:
         )):
             with st.expander(f"Pytanie {i + 1}"):
                 if user_ans != correct_ans:
-                    st.info(f"Pytanie: {q[0]}")
+                    st.text(f"{q[0]}")
                     st.error(f"Twoja odpowiedź: {user_ans}")
                     st.success(f"Prawidłowa odpowiedź: {correct_ans}")
+
+Footer.render()

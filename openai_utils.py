@@ -2,7 +2,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain.chains import LLMChain
 
-def get_quiz_data(text, openai_api_key, difficulty="Medium", num_questions=5, language="English"):
+def get_quiz_data(text, openai_api_key, difficulty, num_questions, language):
     template = f"""
     You are a helpful assistant programmed to generate {num_questions} questions based on any text provided. The questions and answers should match the difficulty on {difficulty} level and be in {language} language.
     Each of these questions will be accompanied by 3 possible answers: one correct answer and two incorrect ones. 
