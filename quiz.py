@@ -19,7 +19,7 @@ st.set_page_config(
 )
 
 MAX_REQUESTS = 5
-TIME_WINDOW = 600
+TIME_WINDOW = 200
 
 if "request_timestamps" not in st.session_state:
     st.session_state.request_timestamps = []
@@ -118,7 +118,7 @@ language = st.selectbox("Wybierz język pytań:", list(language_options.values()
 # Quiz creation
 if st.button("Stwórz Quiz"):
     if not is_request_allowed():
-        st.error(f"Osiągnąłeś limit {MAX_REQUESTS} zapytań w ciągu ostatnich 10 minut. Spróbuj ponownie później!")
+        st.error(f"Osiągnąłeś limit {MAX_REQUESTS} zapytań w ciągu ostatnich 2 minut. Spróbuj ponownie później!")
         st.stop()
 
     if not input_text.strip():

@@ -9,3 +9,5 @@ backgroundColor = "#0f1116"
 secondaryBackgroundColor = "#586e75"
 
 textColor = "#fafafa"
+
+base = "light"

@@ -36,7 +36,7 @@ def get_transcript_text(video_id):
         st.error("Spróbuj z innym filmem, wykryliśmy nieznany problem.")
         st.stop()
     except TranscriptsDisabled:
-        st.error("Film ma wyłączone napisy. Wprowadź proszę inny.")
+        st.error("Chwilowo przekroczyłeś dopuszczalną ilość zapytań YouTube, spróbuj ponownie za chwilę z innym filmem.")
         st.stop()
     except NoTranscriptFound:
         st.error("Film nie posiada napisów w języku polskim, angielskim ani niemieckim :(")
