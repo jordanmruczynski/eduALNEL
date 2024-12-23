@@ -7,6 +7,7 @@ from youtube_transcript_api import (
 
 proxies = {
     "http": "http://brd-customer-hl_4dd03e87-zone-residential_proxy1-country-pl:o692i4vz45iv@brd.superproxy.io:33335",
+    "https": "https://brd-customer-hl_4dd03e87-zone-residential_proxy1-country-pl:o692i4vz45iv@brd.superproxy.io:33335",
 }
 
 def extract_video_id_from_url(url):
