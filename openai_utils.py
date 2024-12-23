@@ -1,10 +1,13 @@
+import ast
+
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain.chains import LLMChain
 
 def get_quiz_data(text, openai_api_key, difficulty, num_questions, language):
     template = f"""
-    You are a helpful assistant programmed to generate {num_questions} questions based on any text provided. The questions and answers should match the difficulty on {difficulty} level and be in {language} language.
+    You are a helpful assistant programmed to generate {num_questions} questions for quiz based on any text provided. The questions and answers should match the difficulty on {difficulty} level and be in {language} language.
+    Focus on creating questions that test the user understanding of the topic and require some thought to answer.
     Each of these questions will be accompanied by 3 possible answers: one correct answer and two incorrect ones. 
 
     For clarity and ease of processing, structure your response in a way that emulates a Python list of lists. 
@@ -24,7 +27,7 @@ def get_quiz_data(text, openai_api_key, difficulty, num_questions, language):
         ["Generated Question 2", "Correct Answer 2", "Incorrect Answer 2.1", "Incorrect Answer 2.2"],
         ...
     ]
-
+    
     It is crucial that you adhere to this format as it's optimized for further Python processing.
 
     """
@@ -35,7 +38,10 @@ def get_quiz_data(text, openai_api_key, difficulty, num_questions, language):
             system_message_prompt, human_message_prompt
         ])
         chain = LLMChain(
-            llm=ChatOpenAI(openai_api_key=openai_api_key),
+            llm=ChatOpenAI(
+                openai_api_key=openai_api_key,
+                model_name="gpt-4o"
+            ),
             prompt=chat_prompt,
         )
         return chain.run(text)
@@ -45,7 +51,8 @@ def get_quiz_data(text, openai_api_key, difficulty, num_questions, language):
 def string_to_list(data_str):
     """Converts a string representation of a Python list to an actual list."""
     try:
-        return eval(data_str)
+        cleaned_str = data_str.replace("```python", "").replace("```", "").strip()
+        return ast.literal_eval(cleaned_str) #eval(cleaned_str)
     except Exception as e:
         raise ValueError(f"Error parsing quiz data string: {str(e)}")
 

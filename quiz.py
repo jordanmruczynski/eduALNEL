@@ -127,6 +127,8 @@ if st.button("Stwórz Quiz"):
 
     with st.spinner("Trwa tworzenie quizu..."):
         quiz_data_str = get_quiz_data(input_text, OPENAI_API_KEY, difficulty=difficulty, num_questions=num_questions, language=language)
+        st.code(repr(quiz_data_str))
+
         st.session_state.quiz_data_list = string_to_list(quiz_data_str)
 
         st.session_state.correct_answers = []

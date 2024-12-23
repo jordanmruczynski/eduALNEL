@@ -6,7 +6,7 @@ from youtube_transcript_api import (
 )
 
 proxies = {
-    "http": st.secrets["proxies_key"]
+    "http": "http://brd-customer-hl_4dd03e87-zone-residential_proxy1-country-pl:o692i4vz45iv@brd.superproxy.io:33335",
 }
 
 def extract_video_id_from_url(url):
@@ -29,7 +29,7 @@ def extract_video_id_from_url(url):
 
 def get_transcript_text(video_id):
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['pl', 'en', 'de'], proxies=proxies)
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['pl', 'en', 'de'])
         return " ".join([item["text"] for item in transcript])
     except (YouTubeRequestFailed, VideoUnavailable, InvalidVideoId, TooManyRequests, NoTranscriptAvailable, NotTranslatable,
             TranslationLanguageNotAvailable, CookiePathInvalid, CookiesInvalid, FailedToCreateConsentCookie):
