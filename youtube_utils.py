@@ -1,3 +1,5 @@
+import random
+
 import streamlit as st
 from youtube_transcript_api import (
     YouTubeTranscriptApi, YouTubeRequestFailed, VideoUnavailable, InvalidVideoId, TooManyRequests,
@@ -5,9 +7,13 @@ from youtube_transcript_api import (
     CookiePathInvalid, CookiesInvalid, FailedToCreateConsentCookie, NoTranscriptFound
 )
 
+proxies_multiline_str = st.secrets["proxies_list"]
+all_proxies = [line.strip() for line in proxies_multiline_str.strip().split('\n') if line.strip()]
+chosen_proxy = random.choice(all_proxies)
+
 proxies = {
-    "http": "http://brd-customer-hl_4dd03e87-zone-residential_proxy1-country-pl:o692i4vz45iv@brd.superproxy.io:33335",
-    "https": "https://brd-customer-hl_4dd03e87-zone-residential_proxy1-country-pl:o692i4vz45iv@brd.superproxy.io:33335",
+    "http":  chosen_proxy.replace("https://", "http://"),
+    "https": chosen_proxy
 }
 
 def extract_video_id_from_url(url):
@@ -30,7 +36,7 @@ def extract_video_id_from_url(url):
 
 def get_transcript_text(video_id):
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['pl', 'en', 'de'])
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, proxies=proxies, languages=['pl', 'en', 'de'])
         return " ".join([item["text"] for item in transcript])
     except (YouTubeRequestFailed, VideoUnavailable, InvalidVideoId, TooManyRequests, NoTranscriptAvailable, NotTranslatable,
             TranslationLanguageNotAvailable, CookiePathInvalid, CookiesInvalid, FailedToCreateConsentCookie):
